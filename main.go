@@ -16,13 +16,15 @@ import (
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Error Loanginf .env file variables")
+		log.Fatal("Error Loading .env file variables")
 	}
+	SERVER_HOST := os.Getenv("SERVER_HOST")
 	SERVER_PORT := os.Getenv("SERVER_PORT")
 	JWT_SECRET_KEY := os.Getenv("JWT_SECRET_KEY")
 	DATABASE_URL := os.Getenv("DATABASE_URL_SUPA")
 
 	s, err := server.NewServer(context.Background(), &server.Config{
+		Host:        SERVER_HOST,
 		Port:        SERVER_PORT,
 		JWTSecret:   JWT_SECRET_KEY,
 		DatabaseUrl: DATABASE_URL,
@@ -34,7 +36,6 @@ func main() {
 }
 
 func BindRoutes(s server.Server, r *mux.Router) {
-
 	r.Use(middleware.CheckAuthMiddleware(s))
 
 	r.HandleFunc("/", handlers.HomeHandler(s)).Methods(http.MethodGet)
@@ -42,4 +43,12 @@ func BindRoutes(s server.Server, r *mux.Router) {
 	r.HandleFunc("/signup", handlers.SignUpHandler(s)).Methods(http.MethodPost)
 	r.HandleFunc("/login", handlers.LoginHandler(s)).Methods(http.MethodPost)
 	r.HandleFunc("/me", handlers.MeHandler(s)).Methods(http.MethodGet)
+
+	r.HandleFunc("/posts", handlers.AddPostHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/posts/{id}", handlers.GetPostHandler(s)).Methods(http.MethodGet)
+	r.HandleFunc("/posts/{id}", handlers.UpdatePostHandler(s)).Methods(http.MethodPut)
+	r.HandleFunc("/posts/{id}", handlers.DeletePostHandler(s)).Methods(http.MethodDelete)
+	r.HandleFunc("/posts/{id}", handlers.ActivatePostHandler(s)).Methods(http.MethodPatch)
+	r.HandleFunc("/posts", handlers.ListPostHandler(s)).Methods(http.MethodGet)
+
 }

@@ -125,7 +125,7 @@ func (repo *PostgresRepository) ListPost(ctx context.Context, page uint64) ([]*m
 		"coalesce(updated_at,to_timestamp(0)) as updated_at, coalesce(deleted_at,to_timestamp(0)) as deleted_at from posts " +
 		" limit $1 offset $2"
 		// sqlQuery := "select id, content, user_id, created_at from posts where id = $1"
-	postRows, err := repo.db.QueryContext(ctx, sqlQuery, 2, page*2)
+	postRows, err := repo.db.QueryContext(ctx, sqlQuery, 5, page*2)
 	defer func() {
 		err = postRows.Close()
 		if err != nil {
@@ -138,7 +138,7 @@ func (repo *PostgresRepository) ListPost(ctx context.Context, page uint64) ([]*m
 		return nil, err
 	}
 
-	fmt.Println("postRows: ", postRows)
+	// fmt.Println("postRows: ", postRows)
 	var times = uint64(0)
 	var posts = []*models.Post{}
 	for postRows.Next() {
@@ -148,15 +148,18 @@ func (repo *PostgresRepository) ListPost(ctx context.Context, page uint64) ([]*m
 			posts = append(posts, &post)
 			times += 1
 		} else {
-			fmt.Println("error", times)
+			// fmt.Println("error", times)
 			fmt.Println(err.Error())
 		}
 	}
-	fmt.Println("times: ", times)
+	// fmt.Println("Postgres ListPost | times: ", times)
 
 	if err = postRows.Err(); err != nil {
 		// log.Fatalln("LOGGG", postRows)
 		return nil, err
+	}
+	if postRows.Next() {
+		fmt.Println("posts: ", *posts[len(posts)-1])
 	}
 	return posts, nil
 }

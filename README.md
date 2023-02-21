@@ -1,4 +1,5 @@
 ## Golang API and WebSockets
+This is a rest API service created in Golang. This project is for create a user, login and create posts as user Authenticated
 
 Main operations
 * GET

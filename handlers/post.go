@@ -67,7 +67,12 @@ func AddPostHandler(s server.Server) http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-
+			// After created a data in db create a message throught websocket
+			var postMessage = models.WebsocketMessage{
+				Type:    "Post_Created",
+				Payload: post,
+			}
+			s.Hub().BroadCast(postMessage, nil)
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(AddPostResponse{
 				Id:      post.Id,

@@ -31,11 +31,11 @@ It's fully functional persisting data on postgres database
 git glone https://github.com/raulcv/golang-api-websockets.git
 ```
 
->> Once cloned with git, enter to your local repository
+> Once cloned with git, enter to your local repository
 ```bash
 cd golang-api-websockets 
 ```
->> Replace in .env.public file with your own credentials
+> Replace in .env.public file with your own credentials
 
 Finally run the Golang API on dev mode 🤪
 ```bash
@@ -46,7 +46,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 Visit [http://localhost:3000/posts?page=1](http://localhost:3000/posts?page=1) to see all created posts.
 
-## Learn More abou go
+## Learn More about go
 
 Check out the [Golang documentation](https://go.dev/doc/).
 

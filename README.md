@@ -1,5 +1,5 @@
 ## Golang API and WebSockets
-This is a rest API service created in Golang. This project is for create a user, login and create posts as user Authenticated
+This is a rest API service created in Golang. This project allows to crearte a user, login and create posts as user Authenticated
 
 Main operations
 * GET
@@ -7,6 +7,7 @@ Main operations
 * PUT
 * PATCH
 * DELETE
+* Web socket gateway
 
 It's fully functional persisting data on postgres database
 

@@ -30,6 +30,11 @@ type UpdatePostResponse struct {
 	Message string `json:"message"`
 }
 
+type PaginationPostResponse struct {
+	Posts []*models.Post `json:"data"`
+	Total int64          `json:"total"`
+}
+
 func AddPostHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -159,9 +164,13 @@ func DeletePostHandler(s server.Server) http.HandlerFunc {
 
 			params := mux.Vars(r)
 
-			err := repository.DeletePost(r.Context(), params["id"], claims.UserId)
+			n, err := repository.DeletePost(r.Context(), params["id"], claims.UserId)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if n <= 0 {
+				http.Error(w, "Post not found, It might was deleted already", http.StatusUnauthorized)
 				return
 			}
 			deletePostResponse := UpdatePostResponse{Message: "Post was deleted successfully"}
@@ -209,5 +218,32 @@ func ListPostHandler(s server.Server) http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(posts)
+	}
+}
+
+func ListPostTwoHandler(s server.Server) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		pageStr := r.URL.Query().Get("page") //content?params=1&limit=10
+		var page = uint64(0)
+		if pageStr != "" {
+			page, err = strconv.ParseUint(pageStr, 10, 64)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+		fmt.Println("pageStr: ", pageStr)
+		posts, total, err := repository.ListPostTwo(r.Context(), page)
+		fmt.Println("pageStr: ", posts)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		postResponse := &PaginationPostResponse{posts, total}
+		//  total := 122
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(postResponse)
 	}
 }

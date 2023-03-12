@@ -241,7 +241,7 @@ func ListPostTwoHandler(s server.Server) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		postResponse := &PaginationPostResponse{posts, 1, total}
+		postResponse := &PaginationPostResponse{posts, int64(page), total}
 		//  total := 122
 
 		w.Header().Set("Content-Type", "application/json")

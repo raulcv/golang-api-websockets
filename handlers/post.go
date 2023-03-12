@@ -32,6 +32,7 @@ type UpdatePostResponse struct {
 
 type PaginationPostResponse struct {
 	Posts []*models.Post `json:"data"`
+	Page  int64          `json:"page"`
 	Total int64          `json:"total"`
 }
 
@@ -225,7 +226,7 @@ func ListPostTwoHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		pageStr := r.URL.Query().Get("page") //content?params=1&limit=10
-		var page = uint64(0)
+		var page = uint64(1)
 		if pageStr != "" {
 			page, err = strconv.ParseUint(pageStr, 10, 64)
 			if err != nil {
@@ -240,7 +241,7 @@ func ListPostTwoHandler(s server.Server) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		postResponse := &PaginationPostResponse{posts, total}
+		postResponse := &PaginationPostResponse{posts, 1, total}
 		//  total := 122
 
 		w.Header().Set("Content-Type", "application/json")
